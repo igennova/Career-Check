@@ -49,7 +49,7 @@ export default function PlacementsPage() {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            year:"2022,
+            year:"2022",
             branch:"cse",
             name: searchName,
             companies: "Google",
