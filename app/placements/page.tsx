@@ -49,11 +49,11 @@ export default function PlacementsPage() {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            year: selectedYear,
-            branch: selectedBranch,
+            year:"2022,
+            branch:"cse",
             name: searchName,
-            companies: selectedCompanies,
-            ctcRange: ctcRange,
+            companies: "Google",
+            ctcRange: "10",
           }),
         })
         const { data } = await response.json()
