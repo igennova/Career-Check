@@ -26,7 +26,7 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error('Error processing placement data:', error)
     return NextResponse.json(
-      { error: 'Failed to process placement data' },
+      { error: 'Failed to process placement data lucky you' },
       { status: 500 }
     )
   }
