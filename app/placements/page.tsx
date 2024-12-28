@@ -4,13 +4,6 @@ import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import {
   Table,
   TableBody,
   TableCell,
@@ -19,201 +12,140 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Navbar } from "@/components/navbar"
-import type { PlacementRecord } from "@/utils/csv-parser"
 
 export default function PlacementsPage() {
-  const [selectedYear, setSelectedYear] = useState("2023")
-  const [selectedBranch, setSelectedBranch] = useState("cumulative")
-  const [searchName, setSearchName] = useState("")
-  const [selectedCompanies, setSelectedCompanies] = useState<string[]>([])
-  const [ctcRange, setCtcRange] = useState({ min: "", max: "" })
-  const [placementData, setPlacementData] = useState<PlacementRecord[]>([])
-  const [loading, setLoading] = useState(false)
-
-  const branches = [
-    { value: "cumulative", label: "Cumulative" },
-    { value: "cse", label: "CSE" },
-    { value: "it", label: "IT" },
-    { value: "ece", label: "ECE" },
-    { value: "mae", label: "MAE" },
-    ...(selectedYear === "2023" ? [{ value: "barch", label: "B.Arch" }] : []),
-  ]
+  const [placementData, setPlacementData] = useState([])
+  const [filteredData, setFilteredData] = useState([])
+  const [filters, setFilters] = useState({
+    year: "2023",
+    branch: "cumulative",
+    name: "",
+    companies: [],
+    ctcRange: { min: "", max: "" },
+  })
 
   useEffect(() => {
+    // Load JSON data once
     async function fetchData() {
-      setLoading(true)
-      try {
-        const response = await fetch('/api/placements', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            year:"2022",
-            branch:"cse",
-            name: searchName,
-            companies: "Google",
-            ctcRange: "10",
-          }),
-        })
-        const { data } = await response.json()
-        setPlacementData(data)
-      } catch (error) {
-        console.error('Error fetching placement data:', error)
-      } finally {
-        setLoading(false)
-      }
+      const response = await fetch(
+        `https://career-check.vercel.app/data/${filters.year}/${filters.branch}.json`
+      )
+      const data = await response.json()
+      setPlacementData(data)
+      setFilteredData(data)
     }
 
     fetchData()
-  }, [selectedYear, selectedBranch, searchName, selectedCompanies, ctcRange])
+  }, [filters.year, filters.branch])
 
   useEffect(() => {
-    if (selectedYear !== "2023" && selectedBranch === "barch") {
-      setSelectedBranch("cumulative")
-    }
-  }, [selectedYear, selectedBranch])
+    // Apply filters
+    const { name, companies, ctcRange } = filters
+    const filtered = placementData.filter((record) => {
+      const matchesName = name
+        ? record.Name.toLowerCase().includes(name.toLowerCase())
+        : true
+      const matchesCompany =
+        companies.length > 0 ? companies.includes(record.FinalOffer) : true
+      const matchesCTC =
+        (ctcRange.min ? +record["CTC (LPA)"] >= +ctcRange.min : true) &&
+        (ctcRange.max ? +record["CTC (LPA)"] <= +ctcRange.max : true)
+
+      return matchesName && matchesCompany && matchesCTC
+    })
+    setFilteredData(filtered)
+  }, [filters, placementData])
+
+  const handleFilterChange = (key, value) => {
+    setFilters((prev) => ({ ...prev, [key]: value }))
+  }
 
   return (
     <div className="min-h-screen bg-gray-950 text-gray-50">
       <Navbar />
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="space-y-6">
-          {/* Year Selection */}
+          {/* Year and Branch Selection */}
           <div className="flex gap-4">
             {["2021", "2022", "2023"].map((year) => (
               <Button
                 key={year}
-                variant={selectedYear === year ? "default" : "secondary"}
-                onClick={() => setSelectedYear(year)}
+                variant={filters.year === year ? "default" : "secondary"}
+                onClick={() => handleFilterChange("year", year)}
               >
                 {year}
               </Button>
             ))}
           </div>
-
-          {/* Branch Selection */}
           <div className="flex flex-wrap gap-4">
-            {branches.map((branch) => (
+            {["cumulative", "cse", "it", "ece", "mae", "barch"].map((branch) => (
               <Button
-                key={branch.value}
-                variant={selectedBranch === branch.value ? "default" : "secondary"}
-                onClick={() => setSelectedBranch(branch.value)}
+                key={branch}
+                variant={filters.branch === branch ? "default" : "secondary"}
+                onClick={() => handleFilterChange("branch", branch)}
               >
-                {branch.label}
+                {branch}
               </Button>
             ))}
           </div>
 
-          {/* Search Filters */}
+          {/* Filters */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* Name Search */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Search by Name</label>
+            <Input
+              placeholder="Search by Name"
+              value={filters.name}
+              onChange={(e) => handleFilterChange("name", e.target.value)}
+            />
+
+            {/* CTC Range */}
+            <div className="flex gap-2">
               <Input
-                placeholder="Enter Name"
-                value={searchName}
-                onChange={(e) => setSearchName(e.target.value)}
-              />
-            </div>
-
-            {/* Company Filter */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Filter by Companies</label>
-              <Select
-                onValueChange={(value) =>
-                  setSelectedCompanies((prev) =>
-                    prev.includes(value)
-                      ? prev.filter((c) => c !== value)
-                      : [...prev, value]
-                  )
+                placeholder="Min CTC"
+                value={filters.ctcRange.min}
+                onChange={(e) =>
+                  handleFilterChange("ctcRange", {
+                    ...filters.ctcRange,
+                    min: e.target.value,
+                  })
                 }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select companies" />
-                </SelectTrigger>
-                <SelectContent>
-                  {Array.from(new Set(placementData.map((d) => d.FinalOffer))).map(
-                    (company) => (
-                      <SelectItem key={company} value={company}>
-                        {company}
-                      </SelectItem>
-                    )
-                  )}
-                </SelectContent>
-              </Select>
-              {selectedCompanies.length > 0 && (
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {selectedCompanies.map((company) => (
-                    <Button
-                      key={company}
-                      variant="secondary"
-                      size="sm"
-                      onClick={() =>
-                        setSelectedCompanies((prev) => prev.filter((c) => c !== company))
-                      }
-                    >
-                      {company} ×
-                    </Button>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* CTC Range Filter */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium">CTC Range (in Lakhs)</label>
-              <div className="flex gap-2">
-                <Input
-                  placeholder="Min"
-                  type="number"
-                  value={ctcRange.min}
-                  onChange={(e) =>
-                    setCtcRange((prev) => ({ ...prev, min: e.target.value }))
-                  }
-                />
-                <Input
-                  placeholder="Max"
-                  type="number"
-                  value={ctcRange.max}
-                  onChange={(e) =>
-                    setCtcRange((prev) => ({ ...prev, max: e.target.value }))
-                  }
-                />
-              </div>
+              />
+              <Input
+                placeholder="Max CTC"
+                value={filters.ctcRange.max}
+                onChange={(e) =>
+                  handleFilterChange("ctcRange", {
+                    ...filters.ctcRange,
+                    max: e.target.value,
+                  })
+                }
+              />
             </div>
           </div>
 
           {/* Results Table */}
-          <div className="rounded-md border border-gray-800">
-            {loading ? (
-              <div className="p-4 text-center">Loading...</div>
-            ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Roll Number</TableHead>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Final Offer</TableHead>
-                    <TableHead>CTC (Lakh)</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {placementData.map((row) => (
-                    <TableRow key={row.RollNumber}>
-                      <TableCell>{row.RollNumber}</TableCell>
-                      <TableCell>{row.Name}</TableCell>
-                      <TableCell>{row.FinalOffer}</TableCell>
-                      <TableCell>{row["CTC (LPA)"]}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            )}
-          </div>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Roll Number</TableHead>
+                <TableHead>Name</TableHead>
+                <TableHead>Final Offer</TableHead>
+                <TableHead>CTC (Lakh)</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredData.map((row) => (
+                <TableRow key={row.RollNumber}>
+                  <TableCell>{row.RollNumber}</TableCell>
+                  <TableCell>{row.Name}</TableCell>
+                  <TableCell>{row.FinalOffer}</TableCell>
+                  <TableCell>{row["CTC (LPA)"]}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         </div>
       </main>
     </div>
   )
 }
-
