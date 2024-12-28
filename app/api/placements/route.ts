@@ -1,5 +1,5 @@
-import { NextResponse } from 'next/server';
-import { fetchPlacementData, filterPlacementData, type PlacementRecord } from '@/utils/csv-parser';
+import { NextResponse } from 'next/server'
+import { readCSVFile, filterPlacementData, type PlacementRecord } from '@/utils/csv-parser'
 
 export async function POST(request: Request) {
   try {
@@ -9,24 +9,26 @@ export async function POST(request: Request) {
       name,
       companies,
       ctcRange
-    } = await request.json();
+    } = await request.json()
+    
 
-    let data: PlacementRecord[] = await fetchPlacementData(year, branch);
+    let data: PlacementRecord[] = await readCSVFile(year, branch)
+    console.log("hello",data)
     
     // Apply filters
     data = filterPlacementData(data, {
       name,
       companies,
       ctcRange
-    });
+    })
 
-    return NextResponse.json({ data });
+    return NextResponse.json({ data })
   } catch (error) {
-    console.error('Error processing placement data:', error);
+    console.error('Error processing placement data:', error)
     return NextResponse.json(
       { error: 'Failed to process placement data' },
       { status: 500 }
-    );
+    )
   }
 }
 

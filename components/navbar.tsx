@@ -23,8 +23,11 @@ export function Navbar() {
             <Link href="/internships" className="hover:text-gray-300">
               Internships
             </Link>
-            <Link href="/student-profile" className="hover:text-gray-300">
+            <Link href="/alumini-connect" className="hover:text-gray-300">
               Alumni Connect
+            </Link>
+            <Link href="/about-us" className="hover:text-gray-300">
+              About us
             </Link>
           </div>
         </div>

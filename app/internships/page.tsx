@@ -1,15 +1,16 @@
 // import { Navbar } from "@/components/navbar"
 import { Navbar } from "@/components/navbar"
 import CompanyCard from '@/components/CompanyCard'
+import Footer from "@/components/Footer"
 
 // Mock data for companies
 const companies = [
-  { id: '1', name: 'Google WE Scholar', logo: '/google logo.png' },
-  { id: '2', name: 'Google STEP', logo: '/placeholder.svg?height=100&width=100' },
-  { id: '3', name: 'DeSHAW', logo: '/placeholder.svg?height=100&width=100' },
-  { id: '4', name: 'NXP Wit Scholar', logo: '/placeholder.svg?height=100&width=100' },
-  { id: '5', name: 'Uber she++/STAR', logo: '/placeholder.svg?height=100&width=100' },
-  { id: '6', name: 'LinkedIN Coachin', logo: '/placeholder.svg?height=100&width=100' },
+  { id: '1', name: 'Google WE Scholar', logo: '/logo/google logo.png' },
+  { id: '2', name: 'Google STEP', logo: '/logo/google logo.png' },
+  { id: '3', name: 'DESIS ASCEND', logo: '/logo/deshaw logo.jpg' },
+  { id: '4', name: 'Amazon ML School', logo: '/logo/amazon logo.png' },
+  { id: '5', name: 'Uber STAR', logo: '/logo/uber logo.png' },
+  { id: '6', name: 'LinkedIN Coachin', logo: '/logo/linkedin.png' },
 ]
 
 export default function InternshipPage() {
@@ -25,6 +26,7 @@ export default function InternshipPage() {
           <CompanyCard key={company.id} {...company} />
         ))}
       </div>
+      <Footer />
     </div>
   )
 }

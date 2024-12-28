@@ -9,21 +9,24 @@ interface StudentCardProps {
 
 export default function StudentCard({ name, year, branch, image }: StudentCardProps) {
   return (
-    <div className="border rounded-lg overflow-hidden">
-      <div className="aspect-square relative">
+    <div className="border rounded-lg overflow-hidden min-h-[220px] flex flex-col">
+      {/* Aspect ratio for the image */}
+      <div className="h-28 flex items-center justify-center relative">
         <Image
           src={image}
           alt={name}
           fill
-          className="object-cover"
+          className="object-contain"
         />
       </div>
-      <div className="p-4">
-        <h3 className="font-semibold">{name}</h3>
-        <p className="text-sm text-gray-600">Year: {year}</p>
-        <p className="text-sm text-gray-600">Branch: {branch}</p>
+      {/* Content area */}
+      <div className="p-4 flex-grow flex flex-col justify-between">
+        <h3 className="font-semibold text-lg">{name}</h3>
+        <div>
+          <p className="text-sm text-gray-600">Year: {year}</p>
+          <p className="text-sm text-gray-600">Branch: {branch}</p>
+        </div>
       </div>
     </div>
-  )
+  );
 }
-

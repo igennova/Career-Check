@@ -195,7 +195,7 @@ export default function PlacementsPage() {
                     <TableHead>Roll Number</TableHead>
                     <TableHead>Name</TableHead>
                     <TableHead>Final Offer</TableHead>
-                    <TableHead>CTC (LPA)</TableHead>
+                    <TableHead>CTC (Lakh)</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
