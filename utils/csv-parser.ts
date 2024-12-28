@@ -17,7 +17,7 @@ export async function readCSVFile(year: string, branch: string): Promise<Placeme
       }
       let allData: PlacementRecord[] = [];
       for (const b of branches) {
-        const filePath = `https://career-check-omega.vercel.app/data/${year}/${b}.csv`;
+        const filePath = `https://career-check.vercel.app/data/${year}/${b}.csv`;
         const fileContent = await fs.readFile(filePath, 'utf-8');
         allData = allData.concat(parse(fileContent, {
           columns: true,
