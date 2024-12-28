@@ -13,7 +13,7 @@ export async function POST(request: Request) {
     
 
     let data: PlacementRecord[] = await readCSVFile(year, branch)
-    console.log("hello",data)
+    
     
     // Apply filters
     data = filterPlacementData(data, {

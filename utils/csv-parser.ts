@@ -47,6 +47,11 @@ export function filterPlacementData(
     ctcRange?: { min: string; max: string }
   }
 ): PlacementRecord[] {
+  // Return all data if no filters are provided
+  if (!filters.name && !filters.companies?.length && !filters.ctcRange) {
+    return data;
+  }
+
   return data.filter((record) => {
     // Name filter
     if (filters.name && !record.Name.toLowerCase().includes(filters.name.toLowerCase())) {
@@ -58,26 +63,20 @@ export function filterPlacementData(
       filters.companies?.length &&
       !filters.companies.includes(record.FinalOffer)
     ) {
-      return false
+      return false;
     }
 
     // CTC range filter
     if (filters.ctcRange?.min || filters.ctcRange?.max) {
-      const ctc = parseFloat(record["CTC (LPA)"])
-      if (
-        filters.ctcRange.min &&
-        ctc < parseFloat(filters.ctcRange.min)
-      ) {
-        return false
+      const ctc = parseFloat(record["CTC (LPA)"]);
+      if (filters.ctcRange.min && ctc < parseFloat(filters.ctcRange.min)) {
+        return false;
       }
-      if (
-        filters.ctcRange.max &&
-        ctc > parseFloat(filters.ctcRange.max)
-      ) {
-        return false
+      if (filters.ctcRange.max && ctc > parseFloat(filters.ctcRange.max)) {
+        return false;
       }
     }
 
-    return true
-  })
+    return true;
+  });
 }
