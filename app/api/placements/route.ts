@@ -16,11 +16,11 @@ export async function POST(request: Request) {
     
     
     // Apply filters
-    data = filterPlacementData(data, {
-      name,
-      companies,
-      ctcRange
-    })
+    // data = filterPlacementData(data, {
+    //   name,
+    //   companies,
+    //   ctcRange
+    // })
 
     return NextResponse.json({ data })
   } catch (error) {
