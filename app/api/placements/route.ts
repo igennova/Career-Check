@@ -10,8 +10,10 @@ export async function POST(request: Request) {
       companies,
       ctcRange
     } = await request.json()
+    
 
     let data: PlacementRecord[] = await readCSVFile(year, branch)
+    console.log("hello",data)
     
     // Apply filters
     data = filterPlacementData(data, {
