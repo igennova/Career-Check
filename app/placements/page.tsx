@@ -13,14 +13,22 @@ import {
 } from "@/components/ui/table"
 import { Navbar } from "@/components/navbar"
 
+// Define the data structure
+interface PlacementRecord {
+  RollNumber: string
+  Name: string
+  FinalOffer: string
+  "CTC (LPA)": string
+}
+
 export default function PlacementsPage() {
-  const [placementData, setPlacementData] = useState([])
-  const [filteredData, setFilteredData] = useState([])
+  const [placementData, setPlacementData] = useState<PlacementRecord[]>([])
+  const [filteredData, setFilteredData] = useState<PlacementRecord[]>([])
   const [filters, setFilters] = useState({
     year: "2023",
     branch: "cumulative",
     name: "",
-    companies: [],
+    companies: [] as string[],
     ctcRange: { min: "", max: "" },
   })
 
@@ -56,7 +64,7 @@ export default function PlacementsPage() {
     setFilteredData(filtered)
   }, [filters, placementData])
 
-  const handleFilterChange = (key, value) => {
+  const handleFilterChange = (key: string, value: any) => {
     setFilters((prev) => ({ ...prev, [key]: value }))
   }
 
